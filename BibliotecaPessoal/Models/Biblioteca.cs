@@ -10,6 +10,7 @@ namespace BibliotecaPessoal.Models
     public class Biblioteca
     {
         public int Id { get; set; }
+
         public Situacao Situacao { get; set; }
         public Avaliacao Avaliacao { get; set; }  
         

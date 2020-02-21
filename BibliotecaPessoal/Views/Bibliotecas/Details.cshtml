@@ -1,0 +1,60 @@
+﻿@model BibliotecaPessoal.Models.Biblioteca
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Biblioteca</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Situacao)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Situacao)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Avaliacao)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Avaliacao)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.InicioLeitura)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.InicioLeitura)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.FinalLeitura)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.FinalLeitura)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Comentario)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Comentario)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Usuario)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Usuario.Id)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Livro)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Livro.Id)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

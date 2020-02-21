@@ -1,0 +1,61 @@
+﻿@model BibliotecaPessoal.Models.Biblioteca
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Create</h2>
+
+<h4>Biblioteca</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Situacao" class="control-label"></label>
+                <select asp-for="Situacao" class="form-control"></select>
+                <span asp-validation-for="Situacao" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Avaliacao" class="control-label"></label>
+                <select asp-for="Avaliacao" class="form-control"></select>
+                <span asp-validation-for="Avaliacao" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="InicioLeitura" class="control-label"></label>
+                <input asp-for="InicioLeitura" class="form-control" />
+                <span asp-validation-for="InicioLeitura" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FinalLeitura" class="control-label"></label>
+                <input asp-for="FinalLeitura" class="form-control" />
+                <span asp-validation-for="FinalLeitura" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Comentario" class="control-label"></label>
+                <input asp-for="Comentario" class="form-control" />
+                <span asp-validation-for="Comentario" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UsuarioId" class="control-label"></label>
+                <select asp-for="UsuarioId" class ="form-control" asp-items="ViewBag.UsuarioId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="LivroID" class="control-label"></label>
+                <select asp-for="LivroID" class ="form-control" asp-items="ViewBag.LivroID"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
