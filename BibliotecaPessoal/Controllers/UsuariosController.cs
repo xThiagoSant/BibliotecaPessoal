@@ -5,24 +5,24 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using BibliotecaPessoal.Data;
 using BibliotecaPessoal.Models;
+using BibliotecaPessoal.Services;
 
 namespace BibliotecaPessoal.Controllers
 {
     public class UsuariosController : Controller
     {
-        private readonly BibliotecaPessoalContext _context;
+        private readonly UsuarioService _usuarioService; 
 
-        public UsuariosController(BibliotecaPessoalContext context)
+        public UsuariosController(UsuarioService usuarioService)
         {
-            _context = context;
+            _usuarioService = usuarioService;
         }
 
         // GET: Usuarios
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Usuario.ToListAsync());
+            return View(await _usuarioService.GetUsuariosAsync());
         }
 
         // GET: Usuarios/Details/5
@@ -33,8 +33,7 @@ namespace BibliotecaPessoal.Controllers
                 return NotFound();
             }
 
-            var usuario = await _context.Usuario
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var usuario = await _usuarioService.GetUsuarioAsync(id.Value);
             if (usuario == null)
             {
                 return NotFound();
@@ -58,8 +57,7 @@ namespace BibliotecaPessoal.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(usuario);
-                await _context.SaveChangesAsync();
+                await _usuarioService.PostUsuario(usuario);
                 return RedirectToAction(nameof(Index));
             }
             return View(usuario);
@@ -73,7 +71,7 @@ namespace BibliotecaPessoal.Controllers
                 return NotFound();
             }
 
-            var usuario = await _context.Usuario.FindAsync(id);
+            var usuario = await _usuarioService.GetUsuarioAsync(id.Value);
             if (usuario == null)
             {
                 return NotFound();
@@ -97,12 +95,11 @@ namespace BibliotecaPessoal.Controllers
             {
                 try
                 {
-                    _context.Update(usuario);
-                    await _context.SaveChangesAsync();
+                    await _usuarioService.PutUsuario(usuario);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UsuarioExists(usuario.Id))
+                    if (!await _usuarioService.UsuarioExists(usuario.Id))
                     {
                         return NotFound();
                     }
@@ -124,8 +121,7 @@ namespace BibliotecaPessoal.Controllers
                 return NotFound();
             }
 
-            var usuario = await _context.Usuario
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var usuario = await _usuarioService.GetUsuarioAsync(id.Value);
             if (usuario == null)
             {
                 return NotFound();
@@ -139,15 +135,8 @@ namespace BibliotecaPessoal.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var usuario = await _context.Usuario.FindAsync(id);
-            _context.Usuario.Remove(usuario);
-            await _context.SaveChangesAsync();
+            await _usuarioService.DelUsuario(id);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool UsuarioExists(int id)
-        {
-            return _context.Usuario.Any(e => e.Id == id);
         }
     }
 }

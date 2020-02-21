@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using BibliotecaPessoal.Data;
+using BibliotecaPessoal.Services;
 
 namespace BibliotecaPessoal
 {
@@ -38,6 +39,9 @@ namespace BibliotecaPessoal
 
             services.AddDbContext<BibliotecaPessoalContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("BibliotecaPessoalContext")));
+
+            services.AddScoped<UsuarioService>();
+            services.AddScoped<EditoraService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
