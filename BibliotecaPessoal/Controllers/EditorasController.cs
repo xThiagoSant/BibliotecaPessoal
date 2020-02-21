@@ -5,24 +5,24 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using BibliotecaPessoal.Data;
 using BibliotecaPessoal.Models;
+using BibliotecaPessoal.Services;
 
 namespace BibliotecaPessoal.Controllers
 {
     public class EditorasController : Controller
     {
-        private readonly BibliotecaPessoalContext _context;
+        private readonly EditoraService _editoraService;
 
-        public EditorasController(BibliotecaPessoalContext context)
+        public EditorasController( EditoraService editoraService)
         {
-            _context = context;
+            _editoraService = editoraService;
         }
 
         // GET: Editoras
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Editora.ToListAsync());
+            return View(await _editoraService.GetEditorasAsync());
         }
 
         // GET: Editoras/Details/5
@@ -33,8 +33,7 @@ namespace BibliotecaPessoal.Controllers
                 return NotFound();
             }
 
-            var editora = await _context.Editora
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var editora = await _editoraService.GetEditoraAsync(id.Value);
             if (editora == null)
             {
                 return NotFound();
@@ -57,9 +56,8 @@ namespace BibliotecaPessoal.Controllers
         public async Task<IActionResult> Create([Bind("Id,Nome")] Editora editora)
         {
             if (ModelState.IsValid)
-            {
-                _context.Add(editora);
-                await _context.SaveChangesAsync();
+            {                
+                await _editoraService.PostEditora(editora);
                 return RedirectToAction(nameof(Index));
             }
             return View(editora);
@@ -73,7 +71,8 @@ namespace BibliotecaPessoal.Controllers
                 return NotFound();
             }
 
-            var editora = await _context.Editora.FindAsync(id);
+            //var editora = await _editoraService._context.Editora.FindAsync(id);
+            var editora = await _editoraService.GetEditoraAsync(id.Value);
             if (editora == null)
             {
                 return NotFound();
@@ -97,12 +96,11 @@ namespace BibliotecaPessoal.Controllers
             {
                 try
                 {
-                    _context.Update(editora);
-                    await _context.SaveChangesAsync();
+                    await _editoraService.PutEditora(editora);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!EditoraExists(editora.Id))
+                    if (! await _editoraService.EditoraExists(editora.Id))
                     {
                         return NotFound();
                     }
@@ -124,8 +122,7 @@ namespace BibliotecaPessoal.Controllers
                 return NotFound();
             }
 
-            var editora = await _context.Editora
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var editora = await _editoraService.GetEditoraAsync(id.Value);
             if (editora == null)
             {
                 return NotFound();
@@ -139,15 +136,8 @@ namespace BibliotecaPessoal.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var editora = await _context.Editora.FindAsync(id);
-            _context.Editora.Remove(editora);
-            await _context.SaveChangesAsync();
+            await _editoraService.DelEditora(id);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool EditoraExists(int id)
-        {
-            return _context.Editora.Any(e => e.Id == id);
         }
     }
 }

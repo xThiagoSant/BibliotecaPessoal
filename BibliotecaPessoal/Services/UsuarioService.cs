@@ -35,7 +35,7 @@ namespace BibliotecaPessoal.Services
 
         public async Task PutUsuario(Usuario usuario)
         {
-            _context.Add(usuario);
+            _context.Update(usuario);
             await _context.SaveChangesAsync();
         }
 

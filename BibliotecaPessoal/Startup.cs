@@ -42,6 +42,8 @@ namespace BibliotecaPessoal
 
             services.AddScoped<UsuarioService>();
             services.AddScoped<EditoraService>();
+            services.AddScoped<LivroService>();
+            services.AddScoped<BibliotecaService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

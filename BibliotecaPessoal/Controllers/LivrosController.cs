@@ -5,25 +5,28 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using BibliotecaPessoal.Data;
 using BibliotecaPessoal.Models;
+using BibliotecaPessoal.Services;
+//using BibliotecaPessoal.Data;
 
 namespace BibliotecaPessoal.Controllers
 {
     public class LivrosController : Controller
     {
-        private readonly BibliotecaPessoalContext _context;
+        private readonly LivroService _livroService;
+        private readonly EditoraService _editoraService;
+        //private readonly BibliotecaPessoalContext _context;
 
-        public LivrosController(BibliotecaPessoalContext context)
+        public LivrosController(LivroService livroService, EditoraService editoraService)
         {
-            _context = context;
+            _livroService = livroService;
+            _editoraService = editoraService;
         }
 
         // GET: Livros
         public async Task<IActionResult> Index()
         {
-            var bibliotecaPessoalContext = _context.Livro.Include(l => l.Editora);
-            return View(await bibliotecaPessoalContext.ToListAsync());
+            return View(await _livroService.GetLivrosAsync());
         }
 
         // GET: Livros/Details/5
@@ -34,9 +37,7 @@ namespace BibliotecaPessoal.Controllers
                 return NotFound();
             }
 
-            var livro = await _context.Livro
-                .Include(l => l.Editora)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var livro = await _livroService.GetLivroAsync(id.Value);
             if (livro == null)
             {
                 return NotFound();
@@ -48,7 +49,7 @@ namespace BibliotecaPessoal.Controllers
         // GET: Livros/Create
         public IActionResult Create()
         {
-            ViewData["EditoraId"] = new SelectList(_context.Editora, "Id", "Id");
+            ViewData["EditoraId"] = new SelectList(_editoraService.Editoras(), "Id", "Id");
             return View();
         }
 
@@ -61,11 +62,10 @@ namespace BibliotecaPessoal.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(livro);
-                await _context.SaveChangesAsync();
+                await _livroService.PostLivro(livro);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EditoraId"] = new SelectList(_context.Editora, "Id", "Id", livro.EditoraId);
+            ViewData["EditoraId"] = new SelectList(_editoraService.Editoras(), "Id", "Id", livro.EditoraId);
             return View(livro);
         }
 
@@ -77,12 +77,12 @@ namespace BibliotecaPessoal.Controllers
                 return NotFound();
             }
 
-            var livro = await _context.Livro.FindAsync(id);
+            var livro = await _livroService.GetLivroAsync(id.Value);
             if (livro == null)
             {
                 return NotFound();
             }
-            ViewData["EditoraId"] = new SelectList(_context.Editora, "Id", "Id", livro.EditoraId);
+            ViewData["EditoraId"] = new SelectList(_editoraService.Editoras(), "Id", "Id", livro.EditoraId);
             return View(livro);
         }
 
@@ -102,12 +102,11 @@ namespace BibliotecaPessoal.Controllers
             {
                 try
                 {
-                    _context.Update(livro);
-                    await _context.SaveChangesAsync();
+                    await _livroService.PutLivro(livro);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!LivroExists(livro.Id))
+                    if (! await _livroService.LivroExists(livro.Id))
                     {
                         return NotFound();
                     }
@@ -118,7 +117,7 @@ namespace BibliotecaPessoal.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EditoraId"] = new SelectList(_context.Editora, "Id", "Id", livro.EditoraId);
+            ViewData["EditoraId"] = new SelectList(_editoraService.Editoras(), "Id", "Id", livro.EditoraId);
             return View(livro);
         }
 
@@ -130,9 +129,7 @@ namespace BibliotecaPessoal.Controllers
                 return NotFound();
             }
 
-            var livro = await _context.Livro
-                .Include(l => l.Editora)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var livro = await _livroService.GetLivroAsync(id.Value);
             if (livro == null)
             {
                 return NotFound();
@@ -146,15 +143,8 @@ namespace BibliotecaPessoal.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var livro = await _context.Livro.FindAsync(id);
-            _context.Livro.Remove(livro);
-            await _context.SaveChangesAsync();
+            await _livroService.DelLivro(id);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool LivroExists(int id)
-        {
-            return _context.Livro.Any(e => e.Id == id);
         }
     }
 }
